@@ -271,6 +271,7 @@ public class Ontology
 
 	/**
 	 * @param e: the EntityType to search in the Ontology
+	 *         跟上面类似的功能，但是是返回所有的实体对应的集合
 	 * @return the set of entities of the given type in the Ontology
 	 */
 	public Set<Integer> getEntities(EntityType e)
@@ -282,6 +283,7 @@ public class Ontology
 
 	/**
 	 * @param name: the localName of the class to get from the Ontology
+	 *            根据给定的名称（字符串） 来搜索在该实体在本体中的索引
 	 * @return the index of the corresponding name in the Ontology
 	 */
 	public int getIndex(String name)
@@ -293,6 +295,7 @@ public class Ontology
 
 	/**
 	 * @param index: the index of the term/property to get the name
+	 *             跟上面的功能相反
 	 * @return the primary name of the term/property with the given index
 	 */
 	public String getName(int index)
@@ -302,6 +305,7 @@ public class Ontology
 
 	/**
 	 * @return the Ontology's Lexicon
+	 * 返回本体中所有的词汇
 	 */
 	public Lexicon getLexicon()
 	{
@@ -310,6 +314,7 @@ public class Ontology
 
 	/**
 	 * @return the set of class local names in the Ontology
+	 * 返回本体中所有类的名称集合
 	 */
 	public Set<String> getLocalNames()
 	{
@@ -319,6 +324,7 @@ public class Ontology
 
 	/**
 	 * @return the Ontology's ReferenceMap
+	 * 返回本体中所有参考映射
 	 */
 	public ReferenceMap getReferenceMap()
 	{
@@ -327,6 +333,7 @@ public class Ontology
 
 	/**
 	 * @return the Ontology's URI
+	 * 返回本体的URI
 	 */
 	public String getURI()
 	{
@@ -335,6 +342,7 @@ public class Ontology
 
 	/**
 	 * @return this Ontology's ValueMap
+	 * 返回本体的所有值（此处还不是很理解）
 	 */
 	public ValueMap getValueMap()
 	{
