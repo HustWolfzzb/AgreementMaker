@@ -118,6 +118,7 @@ public class Ontology
 
 	/**
 	 * Constructs an empty ontology
+	 * 构建一个空的本体
 	 */
 	protected Ontology()
 	{
@@ -142,7 +143,8 @@ public class Ontology
 	}
 	
 	/**
-	 * Constructs an Ontology from file 
+	 * Constructs an Ontology from file
+	 * 从本体文件构建一个本体
 	 * @param path: the path to the input Ontology file
 	 * @throws OWLOntologyCreationException 
 	 */
@@ -162,7 +164,8 @@ public class Ontology
 	}
 
 	/**
-	 * Constructs an Ontology from an URI  
+	 * Constructs an Ontology from an URI
+	 * 从一个URI下载（或者本地加载）构建一个本体
 	 * @param uri: the URI of the input Ontology
 	 * @throws OWLOntologyCreationException 
 	 */
@@ -191,6 +194,7 @@ public class Ontology
 
 	/**
 	 * Constructs an Ontology from an OWLOntology
+	 * 从OWL的本体中创建一个本体
 	 * @param o: the OWLOntology to use
 	 */
 	public Ontology(OWLOntology o)
@@ -205,16 +209,19 @@ public class Ontology
 
 	/**
 	 * Adds an entity to the Ontology
+	 * 给本体中增加一个实体
 	 * @param index: the index of the entity to add
 	 */
 	public void add(int index)
 	{
+		//实体内容相对应的会存储到一个URIMap中，以索引号来指代这个实体
 		entities.add(index);
 		entityTypes.add(uris.getType(index), index);
 	}
 
 	/**
 	 * Closes the Ontology data structures
+	 * 关闭本体结构，数据清空
 	 */
 	public void close()
 	{
@@ -233,6 +240,7 @@ public class Ontology
 
 	/**
 	 * @param index: the index of the entity to search in the Ontology
+	 *             判定是否本体含有给定的索引所对应的实体
 	 * @return whether the Ontology contains the entity with the given index
 	 */
 	public boolean contains(int index)
@@ -242,6 +250,8 @@ public class Ontology
 
 	/**
 	 * @return the number of Entities in the Ontology
+	 * 返回本体中此实体对应的数量，
+	 * entities 是一个HashSet<Integer>索引号对应的集合
 	 */
 	public int count()
 	{
@@ -250,6 +260,8 @@ public class Ontology
 
 	/**
 	 * @param e: the EntityType to check in the Ontology
+	 *         查找给定类型的实体在此本体中的数量
+	 *         EntityType是一个Table2Set<EntityType,Integer>类型的数据，Table2Set代表的是HashMap<EntityType,HashSet<Integer>>
 	 * @return the number of entities of EntityType e in the Ontology
 	 */
 	public int count(EntityType e)

@@ -280,7 +280,7 @@ public class Main
 		System.out.println("|                                                              |");
 		System.out.println("\\______________________________________________________________/");
 	}
-// read to here
+
 	private static void readConfigFile()
 	{
 		File conf = new File(dir + CONFIG);

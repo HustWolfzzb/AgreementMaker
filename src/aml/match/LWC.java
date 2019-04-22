@@ -36,10 +36,12 @@ public class LWC
 	 * multiplied by 1-weight)
 	 * @return: the combined alignment
 	 */
+
+	//线性加权组合，这是第三层的匹配器
 	public static Alignment combine(Alignment a, Alignment b, double weight)
 	{
 		Alignment combine = new Alignment();
-	
+		// 从两个匹配器得到的结果中分别取不同的权重进行加权组合
 		for(Mapping m: a)
 		{
 			double similarity = m.getSimilarity()*weight + 
