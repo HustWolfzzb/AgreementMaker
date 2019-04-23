@@ -353,6 +353,7 @@ public class Ontology
 	 * Build a new WordLexicon of the given EntityType and without
 	 * language restrictions for this Ontology, or returns the
 	 * current WordLexicon if it matches these specifications.
+	 * 返回给定特征（实体类型）的文本集合，如果本身存在则返回，否则新建一个。
 	 * @param e: the EntityType for which to build the WordLexicon
 	 * @return the WordLexicon of this Ontology
 	 */
@@ -367,6 +368,7 @@ public class Ontology
 	 * Build a new WordLexicon of the given EntityType and language
 	 * for this Ontology, or returns the current WordLexicon if it
 	 * matches these specifications.
+	 * 返回给定特征（实体类型和语言）的文本集合，如果本身存在则返回，否则新建一个。
 	 * @param e: the EntityType for which to build the WordLexicon
 	 * @param lang: the language of the WordLexicon
 	 * @return the WordLexicon of this Ontology
@@ -380,6 +382,7 @@ public class Ontology
 
 	/**
 	 * @param index: the index of the URI in the ontology
+	 *             判定给定索引是否对应于存在的类
 	 * @return whether the index corresponds to an obsolete class
 	 */
 	public boolean isObsoleteClass(int index)
@@ -398,6 +401,7 @@ public class Ontology
 //Private Methods	
 
 	//Builds the ontology data structures
+	//根据OWL的本体，建立本体的数据结构
 	private void init(OWLOntology o)
 	{
 		//Check if the ontology is in SKOS format
@@ -435,9 +439,12 @@ public class Ontology
 		}
 	}
 
+
+
 	//SKOS Thesauri
 
 	//Processes the classes and their lexical information
+	//处理类和他们的文本库信息 SKOS类型的词库
 	private void getSKOSConcepts(OWLOntology o)
 	{
 		//The Lexical type and weight
@@ -518,6 +525,7 @@ public class Ontology
 	}
 
 	//Reads all class relationships
+	//读取所有的类之间的关系 SKOS
 	private void getSKOSRelationships(OWLOntology o)
 	{
 		//For simplicity, we convert "broader", "broader_transitive", "narrower"
@@ -634,9 +642,13 @@ public class Ontology
 		}
 	}
 
+
+
+
 	//OWL Ontologies
 
 	//Processes the classes and their lexical information
+	//处理类和他们的文本库信息 OWL类型的词库
 	private void getOWLClasses(OWLOntology o)
 	{
 		//The Lexical type and weight
@@ -781,6 +793,7 @@ public class Ontology
 	}
 
 	//Reads the properties
+	//读取 属性
 	private void getOWLProperties(OWLOntology o)
 	{
 		LexicalType type;
@@ -790,6 +803,7 @@ public class Ontology
 				.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI());
 
 		//Get the Data Properties
+		//获取数据属性
 		Set<OWLDataProperty> dProps = o.getDataPropertiesInSignature(true);
 		for(OWLDataProperty dp : dProps)
 		{
@@ -856,6 +870,7 @@ public class Ontology
 			}
 		}
 		//Get the Object Properties
+		//获取对象属性
 		Set<OWLObjectProperty> oProps = o.getObjectPropertiesInSignature(true);
 		for(OWLObjectProperty op : oProps)
 		{
@@ -975,6 +990,7 @@ public class Ontology
 	}
 
 	//Processes the named individuals and their data property values
+	//处理已命名的个体实例和他们的数据属性值
 	//@author Catia Pesquita
 	private void getOWLNamedIndividuals(OWLOntology o)
 	{
@@ -1144,6 +1160,7 @@ public class Ontology
 	}
 
 	//Reads all class relationships
+	// 读取所有的Class 的 关系 OWL
 	private void getOWLRelationships(OWLOntology o)
 	{
 		OWLReasoner reasoner = null;		
@@ -1171,6 +1188,7 @@ public class Ontology
 		objectSomeValues = new Table2Map<Integer,Integer,Integer>();
 
 		//I - Relationships involving classes
+		// 第一部分，类之间的相关关系
 		//Get an iterator over the ontology classes
 		Set<OWLClass> classes = o.getClassesInSignature(true);
 		//For each class index
@@ -1453,6 +1471,7 @@ public class Ontology
 		objectSomeValues = null;
 
 		//II - Relationships between named individuals
+		// 第二部分，已命名的实例之间的关系
 		//@author: Catia Pesquita
 		//Get an iterator over the named individuals
 		Set<OWLNamedIndividual> individuals = o.getIndividualsInSignature();
@@ -1542,6 +1561,7 @@ public class Ontology
 
 
 		//III - Relationships between properties
+		// 第三部分，属性之间的关系
 		//Data Properties
 		Set<OWLDataProperty> dProps = o.getDataPropertiesInSignature(true);
 		for(OWLDataProperty dp : dProps)
@@ -1584,9 +1604,12 @@ public class Ontology
 		}
 	}
 
-	//Auxiliary Methods
 
-	//Gets a named class from the given OWLOntology 
+
+	//Auxiliary Methods
+	// 辅助方法
+	//Gets a named class from the given OWLOntology
+	// 从给定的OWL本体中获取一个已经命名的类
 	private OWLClass getClass(OWLOntology o, IRI classIRI)
 	{
 		OWLClass cl = null;
@@ -1602,6 +1625,7 @@ public class Ontology
 	}
 
 	//Add a relationship between two classes to the RelationshipMap
+	//在关系映射中 给两个类之间加一个关系
 	private void addRelationship(OWLOntology o, OWLClass c, OWLClassExpression e, boolean sub, boolean inverse)
 	{
 		int child = uris.getIndex(c.getIRI().toString());
@@ -1829,6 +1853,7 @@ public class Ontology
 	}
 
 	//Gets the top level parents of a class (recursively)
+	//得到一个类的根类
 	private Set<Integer> getTopParents(Set<Integer> classes)
 	{
 		Set<Integer> parents = new HashSet<Integer>();
@@ -1845,6 +1870,7 @@ public class Ontology
 	}
 
 	//Get the local name of an entity from its URI
+	// 从一个实体的URI得到他的本地名字（去掉地址符）
 	private String getLocalName(String uri)
 	{
 		String newUri = uri;
