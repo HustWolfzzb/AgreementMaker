@@ -892,7 +892,7 @@ public class AML
 		System.out.println("Running transitive closure on RelationshipMap");
 		rels.transitiveClosure();
 		time = System.currentTimeMillis()/1000 - time;
-		System.out.println("Transitive closure finished in " + time + " seconds");	
+		System.out.println("Transitive closure finished in " + time + " seconds");
 		System.out.println("Extended Relationships: " + rels.relationshipCount());
 		System.out.println("Disjoints: " + rels.disjointCount());
     	//Reset the alignment, mapping, and evaluation
