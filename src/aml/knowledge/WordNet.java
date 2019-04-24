@@ -51,6 +51,7 @@ public class WordNet
 
 	/**
 	 * @param s: the String to search in WordNet
+	 *         返回所有给定字符串的名词形式
 	 * @return the set of noun word forms for the given String
 	 */
 	public HashSet<String> getAllNounWordForms(String s)
@@ -63,6 +64,7 @@ public class WordNet
 		for(Synset ss : synsets)
 		{
 			//Get the WordForms
+			//从单独的一个子集里面获取单词
 			String[] words = ss.getWordForms();
 			for(String w : words)
 				if(!w.trim().equals(""))

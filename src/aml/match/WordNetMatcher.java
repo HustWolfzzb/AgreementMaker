@@ -99,12 +99,17 @@ public class WordNetMatcher implements PrimaryMatcher, LexiconExtender
 	@Override
 	public Alignment match(EntityType e, double thresh) throws UnsupportedEntityTypeException
 	{
+		//检查实体类型是否被支持，包括，类，实例，数据属性，对象属性
 		checkEntityType(e);
 		System.out.println("Running WordNet Matcher");
 		long time = System.currentTimeMillis()/1000;
+		//获取系统的实例
 		AML aml = AML.getInstance();
+		// 得到aml中的source的词汇库
 		Lexicon source = new Lexicon(aml.getSource().getLexicon());
+		// 得到aml中的target的词汇库
 		Lexicon target = new Lexicon(aml.getTarget().getLexicon());
+		// 扩展词汇库
 		extendLexicon(source,e,thresh);
 		extendLexicon(target,e,thresh);
 		Alignment a = match(source,target,e,thresh);
@@ -190,6 +195,7 @@ public class WordNetMatcher implements PrimaryMatcher, LexiconExtender
 		for(String s : names)
 		{
 			//Get all term indexes for the name in both ontologies
+			// 获取所有的跟此类型的同名的实体的index
 			Set<Integer> sIndexes = source.getEntities(e,s);
 			Set<Integer> tIndexes = target.getEntities(e,s);
 			if(tIndexes == null)
