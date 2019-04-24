@@ -112,6 +112,7 @@ public class WordNetMatcher implements PrimaryMatcher, LexiconExtender
 		// 扩展词汇库
 		extendLexicon(source,e,thresh);
 		extendLexicon(target,e,thresh);
+		// 扩展词汇库完成之后，再调用默认的match函数
 		Alignment a = match(source,target,e,thresh);
 		time = System.currentTimeMillis()/1000 - time;
 		System.out.println("Finished in " + time + " seconds");
@@ -140,46 +141,60 @@ public class WordNetMatcher implements PrimaryMatcher, LexiconExtender
 		//Get the original Lexicon names into a Vector since the
 		//Lexicon will be extended during the iteration (otherwise
 		//we'd get a concurrentModificationException)
+		//提取出传入的词汇库的所有的名字
 		Vector<String> names = new Vector<String>(l.getNames(e));
 		//Iterate through the original Lexicon names
+		// 对每一个提取出的词汇进行挨个的解析
 		for(String s : names)
 		{
 			//We don't match formulas to WordNet
+			// 如果WordNet中都乜有这个词，那么，让他滚
 			if(StringParser.isFormula(s))
 				continue;
 			//Find all wordForms in WordNet for each full name
+			// 从这个名字出发的所有的同义词都给获取出来
 			HashSet<String> wordForms = wn.getAllNounWordForms(s);
 			//If there aren't any, break the name into words
 			//(if it is a multi-word name) and look for wordForms
 			//of each word
+			//如果这个名字获取不到同义词，那么进行拆解，根据空格来
 			if(wordForms.size() == 0 && s.contains(" "))
 			{
 				String[] words = s.split(" ");
 				for(String w : words)
 				{
+					// 分割之后如果长度小于3，那么跳过，否则就按照前面的步骤获取同义词
 					if(w.length() < 3)
 						continue;
 					HashSet<String> wf = wn.getAllNounWordForms(w);
 					if(wf.size() == 0)
 						continue;
 					for(String f : wf)
+						// 对每一个同义词，如果它不含有空格，那么就直接用这个词代替掉名字中原来的无法获取同义词的部分放到名字里面并且加入同义词中
 						if(!f.contains(" "))
 							wordForms.add(s.replace(w, f));
 				}
 			}
 			//If there are still no wordForms, proceed to next name
+			//r如果这样还没法找到同义词，那么就跳出来
 			if(wordForms.size() == 0)
 				continue;
+			// 找到了同义词，就用0.9-同义词数量/100
 			double conf = CONFIDENCE - 0.01*wordForms.size();
+			//如果得到的置信度低于阈值，就抛弃，否则就
 			if(conf < thresh)
 				continue;
+			// 如果s是外在的（？？？），那么就获取它在Lex中所有对应的同义词的index
 			Set<Integer> terms = l.getInternalEntities(e,s);
 			//Add each term with the name to the extension Lexicon
+			// 将每个得到的name 扩展到 词汇库中去
 			for(Integer i : terms)
 			{
+				//对每一个index，都计算其相应的相似度权重，乘以置信度，得到一个相似度，与阈值进行匹配
 				double weight = conf * l.getWeight(s, i);
 				if(weight < thresh)
 					continue;
+				// 如果权重达标，那么就把换这个加入到当前的词汇库中去，标记为match
 				for(String w : wordForms)
 					l.add(i, w, "en", TYPE, SOURCE, weight);
 			}
@@ -191,21 +206,25 @@ public class WordNetMatcher implements PrimaryMatcher, LexiconExtender
 	{
 		AML aml = AML.getInstance();
 		Alignment maps = new Alignment();
+		// 从source这里得到所有待匹配的名字
 		Set<String> names = source.getNames(e);
 		for(String s : names)
 		{
 			//Get all term indexes for the name in both ontologies
-			// 获取所有的跟此类型的同名的实体的index
+			// 获取所有的此类型的同名的实体的index
 			Set<Integer> sIndexes = source.getEntities(e,s);
 			Set<Integer> tIndexes = target.getEntities(e,s);
 			if(tIndexes == null)
 				continue;
 			//Otherwise, match all indexes
+			// 如果存在目标index，那么就进行m x n 的配对
 			for(Integer i : sIndexes)
 			{
+				//如果是实例，而又在源实例集中找不到，就不进行配对
 				if(e.equals(EntityType.INDIVIDUAL) && !aml.isToMatchSource(i))
 					continue;
 				//Get the weight of the name for the term in the smaller lexicon
+				// 获取小的词汇库中的修正系数
 				double weight = source.getCorrectedWeight(s, i);
 				Set<String> sSources = source.getSources(s, i);
 				for(Integer j : tIndexes)
@@ -217,6 +236,7 @@ public class WordNetMatcher implements PrimaryMatcher, LexiconExtender
 					Set<String> tSources = target.getSources(s, j);
 					//We only consider matches involving at least one WordNet synonym
 					//and not envolving any external synonyms
+					// 只考虑涉及至少一个WordNet同义词的部分，不接受任何外部同义词
 					boolean check = (sSources.contains(SOURCE) && tSources.contains(SOURCE)) ||
 							(sSources.contains(SOURCE) && tSources.contains("")) ||
 							(sSources.contains("") && tSources.contains(SOURCE));
@@ -224,6 +244,7 @@ public class WordNetMatcher implements PrimaryMatcher, LexiconExtender
 						continue;
 
 					//Get the weight of the name for the term in the larger lexicon
+					// 获取大的词汇库中的修正系数
 					double similarity = target.getCorrectedWeight(s, j);
 					//Then compute the similarity, by multiplying the two weights
 					similarity *= weight;
