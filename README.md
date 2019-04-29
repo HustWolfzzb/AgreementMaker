@@ -11,6 +11,3 @@ Use the following command to build an über jar:
 After building the über jar, type the following:
 
     java -jar target/aml-*-SNAPSHOT.jar
-
-
-# AgreementMaker
